@@ -73,6 +73,8 @@ main:
     mov word  [sockaddr.sin_port], 14619  ; 6969 in the reverse order, in hex 0x1b39 then reversing the bytes 0x391b gives us 14619
     mov dword [sockaddr.sin_addr], INADDR_ANY
     bind_socket [socket_fd], sockaddr.sin_family, sockaddr_len
+    cmp rax, 0
+    jl error
 
     write std_out, ok_msg, ok_msg_len
     close [socket_fd]
