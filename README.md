@@ -1,8 +1,9 @@
-# fasm
+# Playing with Assembler
 
 ## Links
 
-FlatAssembler https://flatassembler.net/
+- FlatAssembler https://flatassembler.net/
+- `server.s` is web server for ARM MaxOS from https://github.com/dadhi/assembly-http-server and originally from https://github.com/dmtrKovalenko/macos-assembly-http-server
 
 
 ## Install
