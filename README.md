@@ -15,7 +15,6 @@ sudo mv fasm /usr/bin/
 echo 'export PATH=$PATH:/usr/bin/fasm' >> ~/.bashrc && source ~/.bashrc
 ```
 
-
 ## Ejemplos in flat assembler
 
 - [X] Hello Sailor
