@@ -1,5 +1,14 @@
 format ELF64 executable
 
+HTTP_PORT   equ 6969
+MAX_CONN    equ 10; backlog in `listen` syscall
+INADDR_ANY  equ 0; bind to all interfaces, see also `in_addr sin_addr`
+
+AF_INET     equ 2; internet domain, see also `sa_family_t sin_family`
+SOCK_STREAM equ 1; tcp type
+IPPROTO_IP  equ 0; ip protocol
+
+
 sys_write   equ 1
 sys_exit    equ 60
 sys_socket  equ 41
@@ -31,13 +40,6 @@ macro exit code
     mov rdi, code
     syscall
 }
-
-MAX_CONN    equ 10; backlog in `listen` syscall
-INADDR_ANY  equ 0; bind to all interfaces, see also `in_addr sin_addr`
-
-AF_INET     equ 2; internet domain, see also `sa_family_t sin_family`
-SOCK_STREAM equ 1; tcp type
-IPPROTO_IP  equ 0; ip protocol
 
 ;; int socket(int domain, int type, int protocol);
 macro socket_create
@@ -85,8 +87,8 @@ segment readable executable
 entry main
 main:
     write std_out, start_msg, start_msg_len
-    write std_out, socket_create_msg, socket_create_msg_len
 
+    write std_out, socket_create_msg, socket_create_msg_len
     socket_create
     cmp rax, 0
     jl error; socket returns negative error values, e.g. -1 = EPROTONOSUPPORT, and the 0 or positive value means OK
@@ -95,7 +97,9 @@ main:
     ;; assign IP, PORT
     write std_out, socket_bind_msg, socket_bind_msg_len
     mov word  [sockaddr.sin_family], AF_INET
-    mov word  [sockaddr.sin_port], 14619; 6969 in the reverse order, in hex 0x1b39 then reversing the bytes 0x391b gives us 14619
+    mov ax, HTTP_PORT; ax is the lower 2 bytes of 8 byte rax, btw. eax is the lower 4 bytes of rax
+    xchg al, ah; swaps the lower byte of ax (al) with the higher byte of ax (ah)
+    mov word  [sockaddr.sin_port], ax; expects the port in the reverse networking order
     mov dword [sockaddr.sin_addr], INADDR_ANY
     socket_bind [socket_fd], sockaddr.sin_family, sockaddr_len
     cmp rax, 0
