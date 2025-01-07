@@ -9,10 +9,20 @@
 ## Install
 
 ```bash
+
 wget https://flatassembler.net/fasm-1.73.32.tgz
 tar -xzf fasm-1.73.32.tgz
 sudo mv fasm /usr/bin/
 echo 'export PATH=$PATH:/usr/bin/fasm' >> ~/.bashrc && source ~/.bashrc
+
+```
+
+## Compile and Run
+
+```bash
+
+fasm ./src/fasm_server.asm fasm_server && ./fasm_server
+
 ```
 
 ## Ejemplos in flat assembler
