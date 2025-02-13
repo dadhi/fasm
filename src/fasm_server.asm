@@ -93,9 +93,9 @@ macro socket_listen fd
 }
 
 ;; int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
-macro socket_accept fd, sockaddr, sockaddr_len
+macro socket_accept fd, sockaddr
 {
-    scall SYS_ACCEPT, fd, sockaddr, sockaddr_len
+    scall SYS_ACCEPT, fd, sockaddr.sin_family, sockaddr.len
 }
 
 ;; struct sockaddr_in {
@@ -144,7 +144,7 @@ main:
 ; todo: @wip
 .request_loop:
     print socket_accept_msg
-    socket_accept [socket_fd], sockaddr.sin_family, sockaddr.len
+    socket_accept [socket_fd], sockaddr
     cmp rax, 0
     jl .error
 
