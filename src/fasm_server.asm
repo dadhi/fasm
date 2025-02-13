@@ -19,55 +19,59 @@ SYS_CLOSE   equ 3
 STD_OUT equ 1
 STD_ERR equ 2
 
+;; macro to simplify sys call with whatever numebr of args, see https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
 ;; puts the return result into the rax register
-macro syscall1 number, a
+macro scall number, a, b, c, d, e, f
 {
     mov rax, number
-    mov rdi, a
-    syscall
-}
-
-macro syscall2 number, a, b
-{
-    mov rax, number
-    mov rdi, a
-    mov rsi, b
-    syscall
-}
-
-macro syscall3 number, a, b, c
-{
-    mov rax, number
-    mov rdi, a
-    mov rsi, b
-    mov rdx, c
+    if ~ a eq ;; if argument is provided, means it is not equal nothing
+        mov rdi, a
+    end if
+    if ~ b eq
+        mov rsi, b
+    end if
+    if ~ c eq
+        mov rdx, c
+    end if
+    if ~ c eq
+        mov rdx, c
+    end if
+    if ~ d eq
+        mov r10, c
+    end if
+    if ~ e eq
+        mov r8, c
+    end if
+    if ~ f eq
+        mov r9, c
+    end if
     syscall
 }
 
 macro print buf
 {
-    syscall3 SYS_WRITE, STD_OUT, buf, buf#.len
+    scall SYS_WRITE, STD_OUT, buf, buf#.len
 }
 
 macro print_err buf
 {
-    syscall3 SYS_WRITE, STD_ERR, buf, buf#.len
+    scall SYS_WRITE, STD_ERR, buf, buf#.len
 }
 
 macro exit code
 {
-    syscall1 SYS_EXIT, code
+    scall SYS_EXIT, code
 }
 
 ;; int socket(int domain, int type, int protocol);
 macro socket_create
 {
-    syscall3 SYS_SOCKET, AF_INET, SOCK_STREAM, IPPROTO_IP
+    scall SYS_SOCKET, AF_INET, SOCK_STREAM, IPPROTO_IP
 }
 
 macro close fd
 {
-    syscall1 SYS_CLOSE, fd
+    scall SYS_CLOSE, fd
 }
 
 ;; int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
@@ -79,19 +83,19 @@ macro socket_bind fd, sockaddr
     mov word [sockaddr.sin_port], ax; expects the port in the reverse networking order
     mov dword [sockaddr.sin_addr], INADDR_ANY
 
-    syscall3 SYS_BIND, fd, sockaddr, sockaddr.len
+    scall SYS_BIND, fd, sockaddr, sockaddr.len
 }
 
 ;; int listen(int sockfd, int backlog);
 macro socket_listen fd
 {
-    syscall2 SYS_LISTEN, fd, MAX_CONN
+    scall SYS_LISTEN, fd, MAX_CONN
 }
 
 ;; int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
 macro socket_accept fd, sockaddr, sockaddr_len
 {
-    syscall3 SYS_ACCEPT, fd, sockaddr, sockaddr_len
+    scall SYS_ACCEPT, fd, sockaddr, sockaddr_len
 }
 
 ;; struct sockaddr_in {
